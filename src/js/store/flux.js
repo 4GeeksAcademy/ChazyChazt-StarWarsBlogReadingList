@@ -1,45 +1,76 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
-		store: {
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
-		},
-		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
-			loadSomeData: () => {
-				/**
-					fetch().then().then(data => setStore({ "foo": data.bar }))
-				*/
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
-				});
-
-				//reset the global store
-				setStore({ demo: demo });
+	  store: {
+		characters: [],
+		planets: [],
+		vehicles: [],
+		favorites: [],
+	  },
+	  actions: {
+		getVehicles: async () => {
+		  try {
+			const response = await fetch("https://swapi.dev/api/vehicles");
+			const data = await response.json();
+			console.log("Hola soy una prueba de Vehicles");
+  
+			console.log(data.results);  
+			if (response.ok) {
+			  setStore({ vehicles: data.results });
 			}
-		}
+		  } catch (error) {
+			console.log(error);
+		  }
+		},
+		getCharacters: async () => {
+		  try {
+			const response = await fetch("https://swapi.dev/api/people");
+			const data = await response.json();
+			console.log("Hola soy una prueba de person")
+			console.log(data.results);
+			if (response.ok) {
+			  setStore({ characters: data.results });
+			}
+		  } catch (error) {
+			console.log(error);
+		  }
+		},
+		getPlanets: async () => {
+		  try {
+			const response = await fetch("https://swapi.dev/api/planets");
+			const data = await response.json();
+			console.log(data.results);
+			if (response.ok) {
+			  setStore({ planets: data.results });
+			}
+		  } catch (error) {
+			console.log(error);
+		  }
+		},
+		addFavoritesCharacters: (character) => {
+		  const store = getStore();
+		  const addFavoriteCharacter = [...store.favorites, character];
+		  setStore({ favorites: addFavoriteCharacter });
+		},
+		addFavoritesPlanets: (planet) => {
+		  const store = getStore();
+		  const addFavoritePlanet = [...store.favorites, planet];
+		  setStore({ favorites: addFavoritePlanet });
+		},
+		deleteFavorites: (character) => {
+		  const store = getStore();
+		  const deletFavorite = store.favorites.filter(
+			(fav) => fav.name !== character
+		  );
+		  setStore({ favorites: deletFavorite });
+		},
+		addFavoritesVehicles: (vehicle) => {
+		  const store = getStore();
+		  const addFavoriteVehicle = [...store.favorites, vehicle];
+		  setStore({ favorites: addFavoriteVehicle });
+		},
+	  },
 	};
-};
-
-export default getState;
+  };
+  
+  export default getState;
+  
